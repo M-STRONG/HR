@@ -1,9 +1,11 @@
 import os
 import logging
+from datetime import timedelta
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Configure logging
@@ -41,6 +43,12 @@ def nl2br(value):
     return value
 
 app.jinja_env.filters['nl2br'] = nl2br
+
+# Initialize CSRF protection
+csrf = CSRFProtect(app)
+
+# Make timedelta available in templates
+app.jinja_env.globals['timedelta'] = timedelta
 
 with app.app_context():
     # Make sure to import the models here or their tables won't be created
