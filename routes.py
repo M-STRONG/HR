@@ -222,29 +222,43 @@ def apply_job(job_id):
     form = ApplicationForm()
     
     if form.validate_on_submit():
-        # Handle file upload
-        cv_file = form.cv_file.data
-        filename = None
-        if cv_file and allowed_file(cv_file.filename):
-            filename = secure_filename(cv_file.filename)
-            # Add timestamp to avoid conflicts
-            import time
-            filename = f"{int(time.time())}_{filename}"
-            cv_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        
-        application = Application(
-            full_name=form.full_name.data,
-            email=form.email.data,
-            phone=form.phone.data,
-            cover_letter=form.cover_letter.data,
-            cv_filename=filename,
-            job_id=job_id
-        )
-        
-        db.session.add(application)
-        db.session.commit()
-        
-        return render_template('application_success.html', job=job)
+        try:
+            # Handle file upload
+            cv_file = form.cv_file.data
+            filename = None
+            if cv_file and cv_file.filename and allowed_file(cv_file.filename):
+                filename = secure_filename(cv_file.filename)
+                # Add timestamp to avoid conflicts
+                import time
+                filename = f"{int(time.time())}_{filename}"
+                
+                # Ensure upload directory exists
+                upload_path = os.path.join(app.config['UPLOAD_FOLDER'])
+                os.makedirs(upload_path, exist_ok=True)
+                
+                # Save the file
+                file_path = os.path.join(upload_path, filename)
+                cv_file.save(file_path)
+            
+            application = Application(
+                full_name=form.full_name.data,
+                email=form.email.data,
+                phone=form.phone.data,
+                cover_letter=form.cover_letter.data,
+                cv_filename=filename,
+                job_id=job_id
+            )
+            
+            db.session.add(application)
+            db.session.commit()
+            
+            flash(get_text('application_success'), 'success')
+            return render_template('application_success.html', job=job)
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(get_text('application_error') if get_current_language() == 'en' else 'حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.', 'error')
+            app.logger.error(f"Application submission error: {str(e)}")
     
     return render_template('jobs/apply.html', job=job, form=form)
 

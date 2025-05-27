@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('page_not_found') if get_current_language() == 'en' else 'الصفحة غير موجودة' }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="mb-4">
+                <i class="fas fa-exclamation-triangle fa-5x text-warning"></i>
+            </div>
+            <h1 class="display-4 mb-3">404</h1>
+            <h2 class="mb-4">
+                {% if get_current_language() == 'ar' %}
+                    الصفحة غير موجودة
+                {% else %}
+                    Page Not Found
+                {% endif %}
+            </h2>
+            <p class="lead mb-4">
+                {% if get_current_language() == 'ar' %}
+                    عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.
+                {% else %}
+                    Sorry, the page you are looking for doesn't exist or has been moved.
+                {% endif %}
+            </p>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-home me-2"></i>{{ get_text('home') }}
+                </a>
+                <a href="{{ url_for('job_list') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-briefcase me-2"></i>{{ get_text('jobs') }}
+                </a>
+                <button onclick="history.back()" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>{{ get_text('back') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

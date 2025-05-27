@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, TextAreaField, SelectField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
+from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional, ValidationError
 from models import User
 
 class LoginForm(FlaskForm):
@@ -52,7 +52,7 @@ class ApplicationForm(FlaskForm):
     phone = StringField('Phone Number', validators=[DataRequired(), Length(max=20)])
     cover_letter = TextAreaField('Cover Letter', validators=[Optional()])
     cv_file = FileField('Upload CV', 
-                        validators=[FileRequired(), 
+                        validators=[FileRequired('Please select a CV file to upload.'), 
                                    FileAllowed(['pdf', 'doc', 'docx'], 
                                              'Only PDF and Word documents are allowed!')])
     submit = SubmitField('Submit Application')
