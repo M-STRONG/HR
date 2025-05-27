@@ -33,6 +33,15 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 # initialize the app with the extension, flask-sqlalchemy >= 3.0.x
 db.init_app(app)
 
+# Add custom Jinja2 filter for line breaks
+def nl2br(value):
+    """Convert newlines to HTML line breaks"""
+    if value:
+        return value.replace('\n', '<br>\n')
+    return value
+
+app.jinja_env.filters['nl2br'] = nl2br
+
 with app.app_context():
     # Make sure to import the models here or their tables won't be created
     import models  # noqa: F401
