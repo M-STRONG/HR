@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('application_success') }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <div class="text-center">
+                <!-- Success Icon -->
+                <div class="mb-4">
+                    <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 100px; height: 100px;">
+                        <i class="fas fa-check fa-3x text-white"></i>
+                    </div>
+                </div>
+                
+                <!-- Success Message -->
+                <h1 class="h2 mb-3 text-success">
+                    {% if get_current_language() == 'ar' %}
+                        تم إرسال طلبك بنجاح!
+                    {% else %}
+                        Application Submitted Successfully!
+                    {% endif %}
+                </h1>
+                
+                <p class="lead mb-4">
+                    {% if get_current_language() == 'ar' %}
+                        شكراً لك على تقديم طلبك للوظيفة. سيقوم فريق الموارد البشرية بمراجعة طلبك والتواصل معك قريباً.
+                    {% else %}
+                        Thank you for your application. Our HR team will review your submission and get back to you soon.
+                    {% endif %}
+                </p>
+            </div>
+            
+            <!-- Application Details Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>{{ get_text('application_details') if get_current_language() == 'en' else 'تفاصيل الطلب' }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong>{{ get_text('job_title') }}:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {% if get_current_language() == 'ar' and job.title_ar %}
+                                {{ job.title_ar }}
+                            {% else %}
+                                {{ job.title }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong>{{ get_text('company') }}:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ job.company.company_name }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong>{{ get_text('department') }}:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {% if get_current_language() == 'ar' and job.department_ar %}
+                                {{ job.department_ar }}
+                            {% else %}
+                                {{ job.department }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong>{{ get_text('location') }}:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {% if get_current_language() == 'ar' and job.location_ar %}
+                                {{ job.location_ar }}
+                            {% else %}
+                                {{ job.location }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong>{{ get_text('application_date') }}:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ moment().format('MMMM Do, YYYY [at] h:mm A') if moment else now().strftime('%B %d, %Y at %I:%M %p') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-road me-2"></i>{{ get_text('next_steps') if get_current_language() == 'en' else 'الخطوات التالية' }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 30px; height: 30px;">
+                                    <i class="fas fa-check text-white small"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">
+                                    {% if get_current_language() == 'ar' %}
+                                        تم استلام طلبك
+                                    {% else %}
+                                        Application Received
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted">
+                                    {% if get_current_language() == 'ar' %}
+                                        تم استلام طلبك بنجاح وهو الآن في قائمة انتظار المراجعة
+                                    {% else %}
+                                        Your application has been received and is now in our review queue
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 30px; height: 30px;">
+                                    <i class="fas fa-clock text-white small"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">
+                                    {% if get_current_language() == 'ar' %}
+                                        مراجعة الطلب
+                                    {% else %}
+                                        Application Review
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted">
+                                    {% if get_current_language() == 'ar' %}
+                                        سيقوم فريق الموارد البشرية بمراجعة سيرتك الذاتية وخطاب التقديم
+                                    {% else %}
+                                        Our HR team will review your CV and cover letter
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="bg-info rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 30px; height: 30px;">
+                                    <i class="fas fa-phone text-white small"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">
+                                    {% if get_current_language() == 'ar' %}
+                                        التواصل معك
+                                    {% else %}
+                                        We'll Contact You
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted">
+                                    {% if get_current_language() == 'ar' %}
+                                        سنتواصل معك خلال 5-7 أيام عمل لإعلامك بحالة طلبك
+                                    {% else %}
+                                        We'll contact you within 5-7 business days regarding your application status
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{{ url_for('job_list') }}" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>{{ get_text('browse_more_jobs') if get_current_language() == 'en' else 'تصفح المزيد من الوظائف' }}
+                    </a>
+                    <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>{{ get_text('back_to_job') if get_current_language() == 'en' else 'العودة للوظيفة' }}
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>{{ get_text('home') }}
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="alert alert-info mt-4" role="alert">
+                <h6 class="alert-heading">
+                    <i class="fas fa-info-circle me-2"></i>{{ get_text('need_help') if get_current_language() == 'en' else 'تحتاج مساعدة؟' }}
+                </h6>
+                <p class="mb-0">
+                    {% if get_current_language() == 'ar' %}
+                        إذا كان لديك أي أسئلة حول طلبك أو الوظيفة، يمكنك التواصل مع {{ job.company.company_name }} 
+                        عبر البريد الإلكتروني: <a href="mailto:{{ job.company.email }}" class="alert-link">{{ job.company.email }}</a>
+                    {% else %}
+                        If you have any questions about your application or the position, you can contact {{ job.company.company_name }} 
+                        at: <a href="mailto:{{ job.company.email }}" class="alert-link">{{ job.company.email }}</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add confetti animation for success (optional enhancement)
+    // You could add a confetti library here for a more celebratory effect
+    
+    // Prevent back button from showing the form again
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+    
+    // Auto-scroll to top
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+</script>
+{% endblock %}

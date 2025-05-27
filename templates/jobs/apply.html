@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('apply_now') }} - {{ job.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">{{ get_text('home') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('job_list') }}">{{ get_text('jobs') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('job_detail', job_id=job.id) }}">
+                {% if get_current_language() == 'ar' and job.title_ar %}
+                    {{ job.title_ar }}
+                {% else %}
+                    {{ job.title }}
+                {% endif %}
+            </a></li>
+            <li class="breadcrumb-item active">{{ get_text('apply_now') }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Application Form -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-paper-plane me-2"></i>{{ get_text('submit_application') }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-user me-2"></i>{{ get_text('personal_info') if get_current_language() == 'en' else 'المعلومات الشخصية' }}
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.full_name.label(class="form-label") }}
+                                        {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else ""), required=true) }}
+                                        {% if form.full_name.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.full_name.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.email.label(class="form-label") }}
+                                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), required=true) }}
+                                        {% if form.email.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.email.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.phone.label(class="form-label") }}
+                                {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else ""), required=true) }}
+                                {% if form.phone.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.phone.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- CV Upload -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-file-upload me-2"></i>{{ get_text('upload_cv') }}
+                            </h5>
+                            
+                            <div class="mb-3">
+                                {{ form.cv_file.label(class="form-label") }}
+                                {{ form.cv_file(class="form-control" + (" is-invalid" if form.cv_file.errors else ""), required=true, accept=".pdf,.doc,.docx") }}
+                                {% if form.cv_file.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.cv_file.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    {{ get_text('cv_file_types') if get_current_language() == 'en' else 'الملفات المدعومة: PDF، Word (DOC, DOCX)' }}
+                                    - {{ get_text('max_file_size') if get_current_language() == 'en' else 'الحد الأقصى' }}: 16MB
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cover Letter -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-edit me-2"></i>{{ get_text('cover_letter') }}
+                            </h5>
+                            
+                            <div class="mb-3">
+                                {{ form.cover_letter.label(class="form-label") }}
+                                {{ form.cover_letter(class="form-control" + (" is-invalid" if form.cover_letter.errors else ""), rows="6") }}
+                                {% if form.cover_letter.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.cover_letter.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    {{ get_text('cover_letter_optional') if get_current_language() == 'en' else 'اختياري - اكتب خطاب تقديم مختصر يوضح سبب اهتمامك بهذه الوظيفة' }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    {% if get_current_language() == 'ar' %}
+                                        أوافق على <a href="#" class="text-decoration-none">الشروط والأحكام</a> وسياسة الخصوصية
+                                    {% else %}
+                                        I agree to the <a href="#" class="text-decoration-none">Terms and Conditions</a> and Privacy Policy
+                                    {% endif %}
+                                </label>
+                                <div class="invalid-feedback">
+                                    {{ get_text('terms_required') if get_current_language() == 'en' else 'يجب الموافقة على الشروط والأحكام' }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-flex gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                            <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>{{ get_text('back') }}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Summary Sidebar -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-briefcase me-2"></i>{{ get_text('job_summary') if get_current_language() == 'en' else 'ملخص الوظيفة' }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">
+                        {% if get_current_language() == 'ar' and job.title_ar %}
+                            {{ job.title_ar }}
+                        {% else %}
+                            {{ job.title }}
+                        {% endif %}
+                    </h6>
+                    <p class="text-primary mb-3">{{ job.company.company_name }}</p>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                            <span>
+                                {% if get_current_language() == 'ar' and job.location_ar %}
+                                    {{ job.location_ar }}
+                                {% else %}
+                                    {{ job.location }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-building text-muted me-2"></i>
+                            <span>
+                                {% if get_current_language() == 'ar' and job.department_ar %}
+                                    {{ job.department_ar }}
+                                {% else %}
+                                    {{ job.department }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-clock text-muted me-2"></i>
+                            <span>
+                                {% if job.employment_type == 'full-time' %}
+                                    {{ get_text('full_time') }}
+                                {% elif job.employment_type == 'part-time' %}
+                                    {{ get_text('part_time') }}
+                                {% else %}
+                                    {{ get_text('contract') }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% if job.salary_range %}
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-dollar-sign text-muted me-2"></i>
+                            <span>{{ job.salary_range }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="border-top pt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ get_text('posted_on') if get_current_language() == 'en' else 'تاريخ النشر' }}: 
+                            {{ job.created_at.strftime('%Y-%m-%d') }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Tips -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>{{ get_text('application_tips') if get_current_language() == 'en' else 'نصائح للتقديم' }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            {% if get_current_language() == 'ar' %}
+                                تأكد من تحديث سيرتك الذاتية
+                            {% else %}
+                                Ensure your CV is up to date
+                            {% endif %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            {% if get_current_language() == 'ar' %}
+                                اكتب خطاب تقديم مخصص للوظيفة
+                            {% else %}
+                                Write a tailored cover letter
+                            {% endif %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            {% if get_current_language() == 'ar' %}
+                                راجع معلوماتك قبل الإرسال
+                            {% else %}
+                                Review your information before submitting
+                            {% endif %}
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check text-success me-2"></i>
+                            {% if get_current_language() == 'ar' %}
+                                استخدم بريد إلكتروني احترافي
+                            {% else %}
+                                Use a professional email address
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // File upload preview and validation
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file size (16MB = 16 * 1024 * 1024 bytes)
+                const maxSize = 16 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    alert('{{ get_text("file_too_large") if get_current_language() == "en" else "الملف كبير جداً. الحد الأقصى 16 ميجابايت" }}');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file type
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('{{ get_text("invalid_file_type") if get_current_language() == "en" else "نوع الملف غير مدعوم. استخدم PDF أو Word فقط" }}');
+                    this.value = '';
+                    return;
+                }
+            }
+        });
+    }
+    
+    // Form submission loading state
+    const form = document.querySelector('form');
+    const submitBtn = document.querySelector('button[type="submit"]');
+    
+    if (form && submitBtn) {
+        form.addEventListener('submit', function(e) {
+            if (form.checkValidity()) {
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ get_text("submitting") if get_current_language() == "en" else "جاري الإرسال..." }}';
+                submitBtn.disabled = true;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

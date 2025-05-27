@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('admin_dashboard') }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h2 class="card-title mb-1">
+                        <i class="fas fa-cog me-2"></i>{{ get_text('admin_dashboard') }}
+                    </h2>
+                    <p class="card-text mb-0">{{ get_text('system_overview') if get_current_language() == 'en' else 'نظرة عامة على النظام' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4 statistics-section">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number" data-count="{{ stats.total_companies }}">{{ stats.total_companies }}</div>
+                <div class="stat-label">{{ get_text('total_companies') }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number" data-count="{{ stats.active_companies }}">{{ stats.active_companies }}</div>
+                <div class="stat-label">{{ get_text('active_companies') }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number" data-count="{{ stats.total_jobs }}">{{ stats.total_jobs }}</div>
+                <div class="stat-label">{{ get_text('total_jobs') }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number" data-count="{{ stats.total_applications }}">{{ stats.total_applications }}</div>
+                <div class="stat-label">{{ get_text('total_applications') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="companies-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#companies" type="button" role="tab">
+                                <i class="fas fa-building me-1"></i>{{ get_text('recent_companies') }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#jobs" type="button" role="tab">
+                                <i class="fas fa-briefcase me-1"></i>{{ get_text('recent_jobs') }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="applications-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#applications" type="button" role="tab">
+                                <i class="fas fa-users me-1"></i>{{ get_text('recent_applications') }}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="adminTabContent">
+                        <!-- Companies Tab -->
+                        <div class="tab-pane fade show active" id="companies" role="tabpanel">
+                            {% if recent_companies %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ get_text('company_name') }}</th>
+                                                <th>{{ get_text('contact_person') }}</th>
+                                                <th>{{ get_text('email') }}</th>
+                                                <th>{{ get_text('registration_date') if get_current_language() == 'en' else 'تاريخ التسجيل' }}</th>
+                                                <th>{{ get_text('status') if get_current_language() == 'en' else 'الحالة' }}</th>
+                                                <th>{{ get_text('actions') if get_current_language() == 'en' else 'الإجراءات' }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for company in recent_companies %}
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-bold">{{ company.company_name }}</div>
+                                                    {% if company.website %}
+                                                        <small class="text-muted">
+                                                            <a href="{{ company.website }}" target="_blank" class="text-decoration-none">
+                                                                <i class="fas fa-external-link-alt"></i>
+                                                            </a>
+                                                        </small>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ company.contact_person }}</td>
+                                                <td>{{ company.email }}</td>
+                                                <td>
+                                                    <small class="text-muted">
+                                                        {{ company.created_at.strftime('%Y-%m-%d') }}
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    {% if company.is_active %}
+                                                        <span class="badge bg-success">{{ get_text('active') if get_current_language() == 'en' else 'نشط' }}</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">{{ get_text('inactive') if get_current_language() == 'en' else 'غير نشط' }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ url_for('toggle_company_status', company_id=company.id) }}" 
+                                                       class="btn btn-sm btn-outline-warning"
+                                                       data-bs-toggle="tooltip" 
+                                                       title="{% if company.is_active %}{{ get_text('deactivate') if get_current_language() == 'en' else 'إلغاء التفعيل' }}{% else %}{{ get_text('activate') if get_current_language() == 'en' else 'تفعيل' }}{% endif %}">
+                                                        <i class="fas fa-toggle-{% if company.is_active %}on{% else %}off{% endif %}"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">{{ get_text('no_companies') if get_current_language() == 'en' else 'لا توجد شركات' }}</h5>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Jobs Tab -->
+                        <div class="tab-pane fade" id="jobs" role="tabpanel">
+                            {% if recent_jobs %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ get_text('job_title') }}</th>
+                                                <th>{{ get_text('company') }}</th>
+                                                <th>{{ get_text('department') }}</th>
+                                                <th>{{ get_text('location') }}</th>
+                                                <th>{{ get_text('applications') }}</th>
+                                                <th>{{ get_text('status') if get_current_language() == 'en' else 'الحالة' }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for job in recent_jobs %}
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-bold">
+                                                        <a href="{{ url_for('job_detail', job_id=job.id) }}" class="text-decoration-none">
+                                                            {% if get_current_language() == 'ar' and job.title_ar %}
+                                                                {{ job.title_ar }}
+                                                            {% else %}
+                                                                {{ job.title }}
+                                                            {% endif %}
+                                                        </a>
+                                                    </div>
+                                                    <small class="text-muted">{{ job.employment_type.replace('-', ' ').title() }}</small>
+                                                </td>
+                                                <td>{{ job.company.company_name }}</td>
+                                                <td>
+                                                    {% if get_current_language() == 'ar' and job.department_ar %}
+                                                        {{ job.department_ar }}
+                                                    {% else %}
+                                                        {{ job.department }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if get_current_language() == 'ar' and job.location_ar %}
+                                                        {{ job.location_ar }}
+                                                    {% else %}
+                                                        {{ job.location }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info">{{ job.applications|length }}</span>
+                                                </td>
+                                                <td>
+                                                    {% if job.is_active %}
+                                                        <span class="badge bg-success">{{ get_text('active') if get_current_language() == 'en' else 'نشط' }}</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">{{ get_text('inactive') if get_current_language() == 'en' else 'غير نشط' }}</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">{{ get_text('no_jobs') if get_current_language() == 'en' else 'لا توجد وظائف' }}</h5>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Applications Tab -->
+                        <div class="tab-pane fade" id="applications" role="tabpanel">
+                            {% if recent_applications %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ get_text('full_name') }}</th>
+                                                <th>{{ get_text('job_title') }}</th>
+                                                <th>{{ get_text('company') }}</th>
+                                                <th>{{ get_text('application_date') }}</th>
+                                                <th>{{ get_text('status') if get_current_language() == 'en' else 'الحالة' }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for application in recent_applications %}
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-bold">{{ application.full_name }}</div>
+                                                    <small class="text-muted">{{ application.email }}</small>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ url_for('job_detail', job_id=application.job.id) }}" class="text-decoration-none">
+                                                        {% if get_current_language() == 'ar' and application.job.title_ar %}
+                                                            {{ application.job.title_ar }}
+                                                        {% else %}
+                                                            {{ application.job.title }}
+                                                        {% endif %}
+                                                    </a>
+                                                </td>
+                                                <td>{{ application.job.company.company_name }}</td>
+                                                <td>
+                                                    <small class="text-muted">
+                                                        {{ application.applied_at.strftime('%Y-%m-%d %H:%M') }}
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-status-{{ application.status }}">
+                                                        {{ get_text(application.status) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">{{ get_text('no_applications') if get_current_language() == 'en' else 'لا توجد طلبات' }}</h5>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

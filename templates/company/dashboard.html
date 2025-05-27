@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('company_dashboard') }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h2 class="card-title mb-1">
+                        <i class="fas fa-tachometer-alt me-2"></i>{{ get_text('welcome_back') }}, {{ company.company_name }}!
+                    </h2>
+                    <p class="card-text mb-0">{{ get_text('company_dashboard') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4 statistics-section">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number" data-count="{{ stats.total_jobs }}">{{ stats.total_jobs }}</div>
+                <div class="stat-label">{{ get_text('total_jobs') }}</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number" data-count="{{ stats.active_jobs }}">{{ stats.active_jobs }}</div>
+                <div class="stat-label">{{ get_text('active_jobs') }}</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number" data-count="{{ stats.total_applications }}">{{ stats.total_applications }}</div>
+                <div class="stat-label">{{ get_text('total_applications') }}</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number" data-count="{{ stats.new_applications }}">{{ stats.new_applications }}</div>
+                <div class="stat-label">{{ get_text('new_applications') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>{{ get_text('quick_actions') if get_current_language() == 'en' else 'إجراءات سريعة' }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ url_for('post_job') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>{{ get_text('post_job') }}
+                        </a>
+                        <a href="{{ url_for('job_list') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-2"></i>{{ get_text('view_jobs') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jobs List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-briefcase me-2"></i>{{ get_text('recent_jobs') }}
+                    </h5>
+                    <a href="{{ url_for('post_job') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>{{ get_text('post_job') }}
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if jobs %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{{ get_text('job_title') }}</th>
+                                        <th>{{ get_text('department') }}</th>
+                                        <th>{{ get_text('location') }}</th>
+                                        <th>{{ get_text('applications') }}</th>
+                                        <th>{{ get_text('status') if get_current_language() == 'en' else 'الحالة' }}</th>
+                                        <th>{{ get_text('actions') if get_current_language() == 'en' else 'الإجراءات' }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job in jobs %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold">
+                                                {% if get_current_language() == 'ar' and job.title_ar %}
+                                                    {{ job.title_ar }}
+                                                {% else %}
+                                                    {{ job.title }}
+                                                {% endif %}
+                                            </div>
+                                            <small class="text-muted">{{ job.employment_type.replace('-', ' ').title() }}</small>
+                                        </td>
+                                        <td>
+                                            {% if get_current_language() == 'ar' and job.department_ar %}
+                                                {{ job.department_ar }}
+                                            {% else %}
+                                                {{ job.department }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if get_current_language() == 'ar' and job.location_ar %}
+                                                {{ job.location_ar }}
+                                            {% else %}
+                                                {{ job.location }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ job.applications|length }}</span>
+                                            {% if job.applications %}
+                                                {% set new_count = job.applications|selectattr('status', 'equalto', 'new')|list|length %}
+                                                {% if new_count > 0 %}
+                                                    <span class="badge bg-warning ms-1">{{ new_count }} {{ get_text('new') }}</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if job.is_active %}
+                                                <span class="badge bg-success">{{ get_text('active') if get_current_language() == 'en' else 'نشط' }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ get_text('inactive') if get_current_language() == 'en' else 'غير نشط' }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('job_detail', job_id=job.id) }}" 
+                                                   class="btn btn-outline-info" 
+                                                   data-bs-toggle="tooltip" 
+                                                   title="{{ get_text('job_details') }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ url_for('view_applications', job_id=job.id) }}" 
+                                                   class="btn btn-outline-primary" 
+                                                   data-bs-toggle="tooltip" 
+                                                   title="{{ get_text('view_applications') }}">
+                                                    <i class="fas fa-users"></i>
+                                                </a>
+                                                <a href="{{ url_for('toggle_job_status', job_id=job.id) }}" 
+                                                   class="btn btn-outline-warning" 
+                                                   data-bs-toggle="tooltip" 
+                                                   title="{% if job.is_active %}{{ get_text('deactivate') if get_current_language() == 'en' else 'إلغاء التفعيل' }}{% else %}{{ get_text('activate') if get_current_language() == 'en' else 'تفعيل' }}{% endif %}">
+                                                    <i class="fas fa-toggle-{% if job.is_active %}on{% else %}off{% endif %}"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">{{ get_text('no_jobs_posted') if get_current_language() == 'en' else 'لم يتم نشر أي وظائف بعد' }}</h5>
+                            <p class="text-muted">{{ get_text('post_first_job') if get_current_language() == 'en' else 'انشر وظيفتك الأولى لبدء استقبال الطلبات' }}</p>
+                            <a href="{{ url_for('post_job') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>{{ get_text('post_job') }}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

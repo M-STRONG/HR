@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('post_job') }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>{{ get_text('post_job') }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Job Title -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.title.label(class="form-label") }}
+                                    {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else ""), required=true) }}
+                                    {% if form.title.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.title.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.title_ar.label(class="form-label") }}
+                                    {{ form.title_ar(class="form-control" + (" is-invalid" if form.title_ar.errors else "")) }}
+                                    {% if form.title_ar.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.title_ar.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Department -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.department.label(class="form-label") }}
+                                    {{ form.department(class="form-control" + (" is-invalid" if form.department.errors else ""), required=true) }}
+                                    {% if form.department.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.department.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.department_ar.label(class="form-label") }}
+                                    {{ form.department_ar(class="form-control" + (" is-invalid" if form.department_ar.errors else "")) }}
+                                    {% if form.department_ar.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.department_ar.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Location and Employment Type -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.location.label(class="form-label") }}
+                                    {{ form.location(class="form-control" + (" is-invalid" if form.location.errors else ""), required=true) }}
+                                    {% if form.location.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.location.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.location_ar.label(class="form-label") }}
+                                    {{ form.location_ar(class="form-control" + (" is-invalid" if form.location_ar.errors else "")) }}
+                                    {% if form.location_ar.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.location_ar.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.employment_type.label(class="form-label") }}
+                                    {{ form.employment_type(class="form-select" + (" is-invalid" if form.employment_type.errors else ""), required=true) }}
+                                    {% if form.employment_type.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.employment_type.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Salary Range -->
+                        <div class="mb-3">
+                            {{ form.salary_range.label(class="form-label") }}
+                            {{ form.salary_range(class="form-control" + (" is-invalid" if form.salary_range.errors else ""), placeholder="e.g., $50,000 - $70,000 or 15,000 - 20,000 SAR") }}
+                            {% if form.salary_range.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.salary_range.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Job Description -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.description.label(class="form-label") }}
+                                    {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows="6", required=true) }}
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.description.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.description_ar.label(class="form-label") }}
+                                    {{ form.description_ar(class="form-control" + (" is-invalid" if form.description_ar.errors else ""), rows="6") }}
+                                    {% if form.description_ar.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.description_ar.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Requirements -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.requirements.label(class="form-label") }}
+                                    {{ form.requirements(class="form-control" + (" is-invalid" if form.requirements.errors else ""), rows="4") }}
+                                    {% if form.requirements.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.requirements.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.requirements_ar.label(class="form-label") }}
+                                    {{ form.requirements_ar(class="form-control" + (" is-invalid" if form.requirements_ar.errors else ""), rows="4") }}
+                                    {% if form.requirements_ar.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.requirements_ar.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                            <a href="{{ url_for('company_dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>{{ get_text('back') }}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('home') }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold">{{ get_text('hero_title') }}</h1>
+                <p class="lead">{{ get_text('hero_subtitle') }}</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{{ url_for('job_list') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-search me-2"></i>{{ get_text('browse_jobs') }}
+                    </a>
+                    {% if not current_user %}
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-building me-2"></i>{{ get_text('for_companies') }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-search fa-3x text-primary-custom"></i>
+                        </div>
+                        <h5 class="card-title">{{ get_text('browse_jobs') }}</h5>
+                        <p class="card-text">{{ get_text('find_talent') }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-plus-circle fa-3x text-primary-custom"></i>
+                        </div>
+                        <h5 class="card-title">{{ get_text('post_jobs_easily') }}</h5>
+                        <p class="card-text">{{ get_text('manage_applications') }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-users fa-3x text-primary-custom"></i>
+                        </div>
+                        <h5 class="card-title">{{ get_text('find_talent') }}</h5>
+                        <p class="card-text">{{ get_text('manage_applications') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Jobs Section -->
+{% if recent_jobs %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-5">{{ get_text('recent_jobs') }}</h2>
+            </div>
+        </div>
+        <div class="row g-4">
+            {% for job in recent_jobs %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card job-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {% if get_current_language() == 'ar' and job.title_ar %}
+                                {{ job.title_ar }}
+                            {% else %}
+                                {{ job.title }}
+                            {% endif %}
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ job.company.company_name }}</h6>
+                        <div class="job-meta mb-3">
+                            <div class="mb-1">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {% if get_current_language() == 'ar' and job.location_ar %}
+                                    {{ job.location_ar }}
+                                {% else %}
+                                    {{ job.location }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-1">
+                                <i class="fas fa-building"></i>
+                                {% if get_current_language() == 'ar' and job.department_ar %}
+                                    {{ job.department_ar }}
+                                {% else %}
+                                    {{ job.department }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-1">
+                                <i class="fas fa-clock"></i>
+                                {{ job.employment_type.replace('-', ' ').title() }}
+                            </div>
+                        </div>
+                        <p class="card-text">
+                            {% set description = job.description_ar if get_current_language() == 'ar' and job.description_ar else job.description %}
+                            {{ description[:100] }}{% if description|length > 100 %}...{% endif %}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-primary w-100">
+                            <i class="fas fa-eye me-2"></i>{{ get_text('job_details') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('job_list') }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-list me-2"></i>{{ get_text('view_jobs') }}
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="mb-4">{{ get_text('for_companies') }}</h2>
+                <p class="lead mb-4">{{ get_text('post_jobs_easily') }}</p>
+                {% if not current_user %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>{{ get_text('register_company') }}
+                </a>
+                {% elif current_user.user_type == 'company' %}
+                <a href="{{ url_for('post_job') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>{{ get_text('post_job') }}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

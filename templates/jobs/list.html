@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('jobs') }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="fas fa-briefcase me-2"></i>{{ get_text('browse_jobs') }}
+            </h2>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="search-form">
+                <form method="GET" id="searchForm">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="search_query" class="form-label">{{ get_text('search') }}</label>
+                            <input type="text" class="form-control" id="search_query" name="search_query" 
+                                   placeholder="{% if get_current_language() == 'ar' %}ابحث عن الوظائف...{% else %}Search jobs...{% endif %}"
+                                   value="{{ request.args.get('search_query', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="department" class="form-label">{{ get_text('department') }}</label>
+                            {{ form.department(class="form-select", id="department") }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="location" class="form-label">{{ get_text('location') }}</label>
+                            {{ form.location(class="form-select", id="location") }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="employment_type" class="form-label">{{ get_text('employment_type') }}</label>
+                            {{ form.employment_type(class="form-select", id="employment_type") }}
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-1"></i>{{ get_text('search') }}
+                            </button>
+                            <a href="{{ url_for('job_list') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>{{ get_text('clear') }}
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    {% if jobs %}
+                        {{ jobs|length }} {{ get_text('jobs_found') if get_current_language() == 'en' else 'وظيفة متاحة' }}
+                    {% else %}
+                        {{ get_text('no_results') }}
+                    {% endif %}
+                </h5>
+                {% if request.args %}
+                    <small class="text-muted">
+                        {{ get_text('filtered_results') if get_current_language() == 'en' else 'نتائج مفلترة' }}
+                    </small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Jobs List -->
+    <div class="row">
+        {% if jobs %}
+            {% for job in jobs %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="card job-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">
+                                {% if get_current_language() == 'ar' and job.title_ar %}
+                                    {{ job.title_ar }}
+                                {% else %}
+                                    {{ job.title }}
+                                {% endif %}
+                            </h5>
+                            {% if job.salary_range %}
+                                <span class="badge bg-success">{{ job.salary_range }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <h6 class="card-subtitle mb-3 text-primary">{{ job.company.company_name }}</h6>
+                        
+                        <div class="job-meta mb-3">
+                            <div class="mb-1">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {% if get_current_language() == 'ar' and job.location_ar %}
+                                    {{ job.location_ar }}
+                                {% else %}
+                                    {{ job.location }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-1">
+                                <i class="fas fa-building"></i>
+                                {% if get_current_language() == 'ar' and job.department_ar %}
+                                    {{ job.department_ar }}
+                                {% else %}
+                                    {{ job.department }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-1">
+                                <i class="fas fa-clock"></i>
+                                {% if job.employment_type == 'full-time' %}
+                                    {{ get_text('full_time') }}
+                                {% elif job.employment_type == 'part-time' %}
+                                    {{ get_text('part_time') }}
+                                {% else %}
+                                    {{ get_text('contract') }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-1">
+                                <i class="fas fa-calendar"></i>
+                                {{ job.created_at.strftime('%Y-%m-%d') }}
+                            </div>
+                        </div>
+                        
+                        <p class="card-text">
+                            {% set description = job.description_ar if get_current_language() == 'ar' and job.description_ar else job.description %}
+                            {{ description[:120] }}{% if description|length > 120 %}...{% endif %}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-outline-primary flex-fill">
+                                <i class="fas fa-eye me-1"></i>{{ get_text('job_details') }}
+                            </a>
+                            <a href="{{ url_for('apply_job', job_id=job.id) }}" class="btn btn-primary flex-fill">
+                                <i class="fas fa-paper-plane me-1"></i>{{ get_text('apply_now') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-4x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">{{ get_text('no_jobs_found') if get_current_language() == 'en' else 'لم يتم العثور على وظائف' }}</h3>
+                    <p class="text-muted mb-4">
+                        {% if request.args %}
+                            {{ get_text('try_different_search') if get_current_language() == 'en' else 'جرب معايير بحث مختلفة' }}
+                        {% else %}
+                            {{ get_text('no_jobs_available') if get_current_language() == 'en' else 'لا توجد وظائف متاحة حالياً' }}
+                        {% endif %}
+                    </p>
+                    {% if request.args %}
+                        <a href="{{ url_for('job_list') }}" class="btn btn-primary">
+                            <i class="fas fa-refresh me-2"></i>{{ get_text('view_all_jobs') if get_current_language() == 'en' else 'عرض جميع الوظائف' }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Load More / Pagination (if needed in future) -->
+    {% if jobs and jobs|length >= 12 %}
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <p class="text-muted">{{ get_text('showing_results') if get_current_language() == 'en' else 'عرض النتائج' }}: {{ jobs|length }}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form when filters change
+    const filterSelects = document.querySelectorAll('#department, #location, #employment_type');
+    filterSelects.forEach(function(select) {
+        select.addEventListener('change', function() {
+            document.getElementById('searchForm').submit();
+        });
+    });
+    
+    // Set current filter values
+    const urlParams = new URLSearchParams(window.location.search);
+    filterSelects.forEach(function(select) {
+        const value = urlParams.get(select.name);
+        if (value) {
+            select.value = value;
+        }
+    });
+});
+</script>
+{% endblock %}
