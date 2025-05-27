@@ -94,7 +94,7 @@
                             <strong>{{ get_text('application_date') }}:</strong>
                         </div>
                         <div class="col-sm-8">
-                            {{ moment().format('MMMM Do, YYYY [at] h:mm A') if moment else now().strftime('%B %d, %Y at %I:%M %p') }}
+                            {{ moment().format('MMMM Do, YYYY [at] h:mm A') if moment else 'الآن' if get_current_language() == 'ar' else 'Just now' }}
                         </div>
                     </div>
                 </div>
